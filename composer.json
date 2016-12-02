@@ -1,0 +1,23 @@
+{
+    "name": "kyozhou/fast-mysql-client",
+    "type": "library",
+    "description": "Mysql Client For PHP 7",
+    "keywords": ["mysql-client","mysql","singleton"],
+    "homepage": "https://github.com/kyozhou/fast-mysql-client",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "kyozhou",
+            "email": "kyozhou@sina.com",
+            "homepage": "http://kyozhou.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "psr-0": {
+        }
+    }
+}
