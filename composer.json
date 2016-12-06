@@ -1,5 +1,5 @@
 {
-    "name": "kyozhou/fast-mysql-client",
+    "name": "kyoz/fast-mysql-client",
     "type": "library",
     "description": "Mysql Client For PHP 7",
     "keywords": ["mysql-client","mysql","singleton"],
