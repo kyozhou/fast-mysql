@@ -53,10 +53,20 @@ class DB {
             array(
                 \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '. $this->charset,
                 \PDO::ATTR_EMULATE_PREPARES => false,
+                \PDO::ATTR_TIMEOUT => 3,
                 \PDO::ATTR_STRINGIFY_FETCHES => false
             ));
         } catch (PDOException $e) {
             echo 'Connection failed: ' . $e->getMessage();
+        }
+    }
+
+    function isConnected() {
+        $status = !empty($this->pdoObj) ? $this->pdoObj->getAttribute(\PDO::ATTR_CONNECTION_STATUS) : "";
+        if ( !empty($status) && strpos($status, " via TCP/IP") + 11 === strlen($status) ) {
+            return true;
+        }else {
+            return false;
         }
     }
 
@@ -65,18 +75,30 @@ class DB {
     }
 
     function beginTransaction() {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $this->pdoObj->beginTransaction();
     }
 
     function commit() {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $this->pdoObj->commit();
     }
 
     function rollback() {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $this->pdoObj->rollBack();
     }
 
     function execute($sql, $args = []) {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $statement = $this->pdoObj->prepare($sql);
         if($statement) {
             $this->bindParams($statement, $args);
@@ -88,6 +110,9 @@ class DB {
     }
 
     function insert($sql, $args = [], $key = null) {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $statement = $this->pdoObj->prepare($sql);
         if($statement) {
             $this->bindParams($statement, $args);
@@ -100,6 +125,9 @@ class DB {
     }
 
     function fetchTable($sql, $args = []) {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $statement = $this->pdoObj->prepare($sql);
         if($statement) {
             $this->bindParams($statement, $args);
@@ -112,6 +140,9 @@ class DB {
     }
 
     function fetchRow($sql, $args = []) {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $statement = $this->pdoObj->prepare($sql);
         if($statement) {
             $this->bindParams($statement, $args);
@@ -124,6 +155,9 @@ class DB {
     }
 
     function fetchColumn($sql, $args = []) {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $statement = $this->pdoObj->prepare($sql);
         if($statement) {
             $this->bindParams($statement, $args);
@@ -141,6 +175,9 @@ class DB {
     }
 
     function fetchCell($sql, $args = []) {
+        if(!$this->isConnected()) {
+            $this->connect();
+        }
         $statement = $this->pdoObj->prepare($sql);
         if($statement) {
             $this->bindParams($statement, $args);
