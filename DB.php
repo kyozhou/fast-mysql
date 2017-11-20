@@ -53,7 +53,6 @@ class DB {
             array(
                 \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '. $this->charset,
                 \PDO::ATTR_EMULATE_PREPARES => false,
-                \PDO::ATTR_TIMEOUT => 3,
                 \PDO::ATTR_STRINGIFY_FETCHES => false
             ));
         } catch (PDOException $e) {
