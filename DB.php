@@ -56,7 +56,7 @@ class DB {
                 \PDO::ATTR_STRINGIFY_FETCHES => false
             ));
         } catch (PDOException $e) {
-            echo 'Connection failed: ' . $e->getMessage();
+            $this->logger('Connection failed: ' . $e->getMessage());
         }
     }
 
@@ -74,127 +74,172 @@ class DB {
     }
 
     function beginTransaction() {
-        if(!$this->isConnected()) {
-            $this->connect();
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $this->pdoObj->beginTransaction();
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
-        $this->pdoObj->beginTransaction();
     }
 
     function commit() {
-        if(!$this->isConnected()) {
-            $this->connect();
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $this->pdoObj->commit();
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
-        $this->pdoObj->commit();
     }
 
     function rollback() {
-        if(!$this->isConnected()) {
-            $this->connect();
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $this->pdoObj->rollBack();
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
-        $this->pdoObj->rollBack();
     }
 
     function execute($sql, $args = []) {
-        if(!$this->isConnected()) {
-            $this->connect();
-        }
-        $statement = $this->pdoObj->prepare($sql);
-        if($statement) {
-            $this->bindParams($statement, $args);
-            $statement->execute($args);
-            return $statement->rowCount();
-        }else {
-            return false;
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $statement = $this->pdoObj->prepare($sql);
+            if($statement) {
+                $this->bindParams($statement, $args);
+                $statement->execute($args);
+                return $statement->rowCount();
+            }else {
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
     }
 
     function insert($sql, $args = [], $key = null) {
-        if(!$this->isConnected()) {
-            $this->connect();
-        }
-        $statement = $this->pdoObj->prepare($sql);
-        if($statement) {
-            $this->bindParams($statement, $args);
-            $statement->execute($args);
-            $lastInsertId = $key == null ? $this->pdoObj->lastInsertId() : $this->pdoObj->lastInsertId($key);
-            return (int)$lastInsertId;
-        }else {
-            return false;
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $statement = $this->pdoObj->prepare($sql);
+            if($statement) {
+                $this->bindParams($statement, $args);
+                $statement->execute($args);
+                $lastInsertId = $key == null ? $this->pdoObj->lastInsertId() : $this->pdoObj->lastInsertId($key);
+                return (int)$lastInsertId;
+            }else {
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
     }
 
     function fetchTable($sql, $args = []) {
-        if(!$this->isConnected()) {
-            $this->connect();
-        }
-        $statement = $this->pdoObj->prepare($sql);
-        if($statement) {
-            $this->bindParams($statement, $args);
-            $statement->execute($args);
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            return $result;
-        }else {
-            return false;
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $statement = $this->pdoObj->prepare($sql);
+            if($statement) {
+                $this->bindParams($statement, $args);
+                $statement->execute($args);
+                $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+                return $result;
+            }else {
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
     }
 
     function fetchRow($sql, $args = []) {
-        if(!$this->isConnected()) {
-            $this->connect();
-        }
-        $statement = $this->pdoObj->prepare($sql);
-        if($statement) {
-            $this->bindParams($statement, $args);
-            $statement->execute($args);
-            $result = $statement->fetch(\PDO::FETCH_ASSOC);
-            return $result;
-        }else {
-            return false;
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $statement = $this->pdoObj->prepare($sql);
+            if($statement) {
+                $this->bindParams($statement, $args);
+                $statement->execute($args);
+                $result = $statement->fetch(\PDO::FETCH_ASSOC);
+                return $result;
+            }else {
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
     }
 
     function fetchColumn($sql, $args = []) {
-        if(!$this->isConnected()) {
-            $this->connect();
-        }
-        $statement = $this->pdoObj->prepare($sql);
-        if($statement) {
-            $this->bindParams($statement, $args);
-            $statement->execute($args);
-            $column = [];
-            $result = $statement->fetchColumn();
-            while($result !== false) {
-                $column[] = $result;
-                $result = $statement->fetchColumn();
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
             }
-            return $column;
-        }else {
-            return false;
+            $statement = $this->pdoObj->prepare($sql);
+            if($statement) {
+                $this->bindParams($statement, $args);
+                $statement->execute($args);
+                $column = [];
+                $result = $statement->fetchColumn();
+                while($result !== false) {
+                    $column[] = $result;
+                    $result = $statement->fetchColumn();
+                }
+                return $column;
+            }else {
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
     }
 
     function fetchCell($sql, $args = []) {
-        if(!$this->isConnected()) {
-            $this->connect();
-        }
-        $statement = $this->pdoObj->prepare($sql);
-        if($statement) {
-            $this->bindParams($statement, $args);
-            $statement->execute($args);
-            $result = $statement->fetch(\PDO::FETCH_NUM);
-            return empty($result[0]) ? null : $result[0];
-        }else {
-            return false;
+        try {
+            if(!$this->isConnected()) {
+                $this->connect();
+            }
+            $statement = $this->pdoObj->prepare($sql);
+            if($statement) {
+                $this->bindParams($statement, $args);
+                $statement->execute($args);
+                $result = $statement->fetch(\PDO::FETCH_NUM);
+                return empty($result[0]) ? null : $result[0];
+            }else {
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
     }
 
     function bindParams(&$statement, &$args) {
-        foreach($args as $index => &$arg) {
-            if(is_int($arg)) {
-                $statement->bindValue($index+1, (int)$arg, \PDO::PARAM_INT);
-            }else {
-                $statement->bindValue($index+1, $arg, \PDO::PARAM_STR);
+        try {
+            foreach($args as $index => &$arg) {
+                if(is_int($arg)) {
+                    $statement->bindValue($index+1, (int)$arg, \PDO::PARAM_INT);
+                }else {
+                    $statement->bindValue($index+1, $arg, \PDO::PARAM_STR);
+                }
             }
+        } catch (Exception $e) {
+            $this->logger($e->getTraceAsString());
         }
+    }
+
+    function logger($message) {
+        $message = "[" . date("Y-m-d H:i:s") . "]\n" . $message;
+        file_put_contents("/tmp/fast-mysql-client-error.log", $message . "\n", FILE_APPEND);
     }
 }
