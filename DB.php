@@ -51,6 +51,7 @@ class DB {
             $this->user,
             $this->password,
             array(
+                \PDO::ATTR_PERSISTENT => true,
                 \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '. $this->charset,
                 \PDO::ATTR_EMULATE_PREPARES => false,
                 \PDO::ATTR_STRINGIFY_FETCHES => false
