@@ -1,6 +1,5 @@
 {
     "name": "kyoz/fast-mysql-client",
-    "version": "1.0.6",
     "type": "library",
     "description": "Mysql Client For PHP 7",
     "keywords": ["mysql-client","mysql","singleton"],
